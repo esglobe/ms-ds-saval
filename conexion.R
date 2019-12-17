@@ -8,8 +8,10 @@
 # CONEXIONES
 #######
 
-#open constructor
+#AltoConexion
 AltoConexion <- function(empresa = "TRANSPORTE_SAVAL"){
+    
+    empresa = "TRANSPORTE_SAVAL"
     
     #lista de servidores
     .server_select <- function(compania){
@@ -18,7 +20,7 @@ AltoConexion <- function(empresa = "TRANSPORTE_SAVAL"){
             TRANSPORTE_AASA  = "altotrack-sql2.clhc4wjn055a.us-east-1.rds.amazonaws.com"
             ,TRANSPORTE_FALABELLA   = "altotrack-sql2.clhc4wjn055a.us-east-1.rds.amazonaws.com"
             ,TRANSPORTE_SAAM  = "altotrack-sql2.clhc4wjn055a.us-east-1.rds.amazonaws.com"
-            ,TRANSPORTE_SAVAL  = "altotrack-sql2.clhc4wjn055a.us-east-1.rds.amazonaws.com"
+            ,TRANSPORTE_SAVAL  = "c"
             ,TRANSPORTE_SITRANS  = "altotrack-sql2.clhc4wjn055a.us-east-1.rds.amazonaws.com"
             
             ,TRANSPORTE_CAROZZI  = "altotrack-sql.clhc4wjn055a.us-east-1.rds.amazonaws.com"
@@ -40,8 +42,6 @@ AltoConexion <- function(empresa = "TRANSPORTE_SAVAL"){
                                ,encoding = "latin1")
     
     
-    
-        
     lista <- list( 'conexion' = produ
                    ,'compania' =  empresa )
         
@@ -61,7 +61,30 @@ despacho <- function(empresa = "TRANSPORTE_SAVAL"){
     #conexion
     con <- AltoConexion(empresa)
     
-    data <- odbc::dbSendQuery( con$conexion, .despacho(empresa)  ) 
+    data <- odbc::dbSendQuery( con$conexion, .despacho( con$compania)  ) 
+    datos <- odbc::dbFetch(data)
+    
+    odbc::dbClearResult(data)
+    odbc::dbDisconnect(con$conexion)
+    
+    
+    return( data.frame(datos) )
+    
+    
+    
+}
+
+#last position
+last_posiotions <- function(empresa = "TRANSPORTE_SAVAL"){
+    
+    #querys
+    source('querys.R')
+    
+    #conexion
+    con <- AltoConexion(empresa)
+    
+    data <- odbc::dbSendQuery( con$conexion, .last_positios(empresa) )
+
     datos <- odbc::dbFetch(data)
     
     odbc::dbClearResult(data)
@@ -69,7 +92,6 @@ despacho <- function(empresa = "TRANSPORTE_SAVAL"){
     
     
     return(datos)
-    
     
     
 }
